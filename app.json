@@ -1,0 +1,9 @@
+{
+  "name": "aula-telas",
+  "slug": "aula-telas",
+  "scheme": "aula-telas",
+  "plugins": [
+    "expo-router",
+    "expo-sqlite"
+  ]
+}
