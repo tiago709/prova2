@@ -1,16 +1,26 @@
-import { useState } from "react";
-import { View, Text, Button } from "react-native";
-import { Link } from "expo-router";
+import React from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
 
-export default function Home() {
-
+export default function HomeScreen() {
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 12 }}>
-      <Text style={{ fontSize: 18 }}>CENTRAL DE ATEDINMENTO</Text>
-
+    <View style={styles.container}>
+      <Text style={styles.title}>App de Treinos</Text>
       <Link href="/sqlite" asChild>
-        <Button title="Sou cliente" />
+        <Button title="Ver Treinos" />
       </Link>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+});

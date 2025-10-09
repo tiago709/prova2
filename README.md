@@ -1,47 +1,16 @@
-# My Universal React Project
+- Primeiro é necessário fazer a configuração do Banco de Dados da aplicação contendo o que foi pedido no trabalho, duração minima, atividade e capacidade (CREATE TABLE) 
+- Após isso é necessário fazer as functions do banco de dados (SELECT) para cada função que ele terá, excluir, salvas e recuperar todos...
+- Com isso pronto é necessário criar o modelo que será apresentado no trabalho (interface) sendo ela uma tela, onde terá em cima o campo para digitar o que irá ser salvo e colocado na tabela/lista (nesse caso lista). 
+- Foi desenvolvido também a aplicação para Limpar campos, onde quando for digitado é possível apagar e escrever novamente. Outra coisa que foi incrementado é o editar que puxa a informação que foi colocada (escolhida) e você consegue modifica-la.
+- É importante mencionar que após a criança da interface para deixar mais esteticamente bonita, deve ser aplicado o CSS, para os botões e campos, além de dimensionamento da tela.
+- Criei também a aplicação de contagem de quantos treinos foram cadastrados, a partir da quantia de treinos que o usuário fazer o cadastro.
+- Outro ponto improtante para não criar um loop deve ser criado 2 usereffect diferentes, evitando possiveis conflitlos, na hora de criação do contador
 
-<p>
-  <!-- iOS -->
-  <a href="https://itunes.apple.com/app/apple-store/id982107779">
-    <img alt="Supports Expo iOS" longdesc="Supports Expo iOS" src="https://img.shields.io/badge/iOS-4630EB.svg?style=flat-square&logo=APPLE&labelColor=999999&logoColor=fff" />
-  </a>
-  <!-- Android -->
-  <a href="https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=blankexample">
-    <img alt="Supports Expo Android" longdesc="Supports Expo Android" src="https://img.shields.io/badge/Android-4630EB.svg?style=flat-square&logo=ANDROID&labelColor=A4C639&logoColor=fff" />
-  </a>
-  <!-- Web -->
-  <a href="https://docs.expo.dev/workflow/web/">
-    <img alt="Supports Expo Web" longdesc="Supports Expo Web" src="https://img.shields.io/badge/web-4630EB.svg?style=flat-square&logo=GOOGLE-CHROME&labelColor=4285F4&logoColor=fff" />
-  </a>
-</p>
+Para passar para o GITHUB, deve ser usado os seguintes comando, um após o outro no terminal, no devido repositório, para que assim seje aplicado e salvo o trabalho:
 
-## Launch your own
-
-[![Launch with Expo](https://github.com/expo/examples/blob/master/.gh-assets/launch.svg?raw=true)](https://launch.expo.dev/?github=https://github.com/expo/examples/tree/master/blank)
-
-## 🚀 How to use
-
-- Install packages with `yarn` or `npm install`.
-  - If you have native iOS code run `npx pod-install`
-- Run `yarn start` or `npm run start` to start the bundler.
-- Open the project in a React runtime to try it:
-  - iOS: [Client iOS](https://itunes.apple.com/app/apple-store/id982107779)
-  - Android: [Client Android](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=blankexample)
-  - Web: Any web browser
-
-## Running/Modifying Native Code
-
-You can generate native iOS and Android projects from your Expo config file (**app.json**/ **app.config.js**) by runnning `npx expo prebuild`. These native projects can then be compiled and run via XCode and Android Studio.
-
-> 💡 Learn more about [native code in Expo](https://docs.expo.dev/workflow/customizing/)
-
-## Publishing
-
-- Deploy the native app to the App store and Play store using this guide: [Deployment](https://docs.expo.dev/distribution/app-stores/).
-- Deploy the website using this guide: [Web deployment](https://docs.expo.dev/distribution/publishing-websites/).
-
-## 📝 Notes
-
-- Learn more about [Universal React](https://docs.expo.dev/).
-- See what API and components are [available in the React runtimes](https://docs.expo.dev/versions/latest/).
-- Find out more about developing apps and websites: [Guides](https://docs.expo.dev/guides/).
+git init
+git add .
+git commit -m "primeira atualização"
+git branch -M main
+git remote add origin https://github.com/tiago709/08.10.git
+git push -u origin main

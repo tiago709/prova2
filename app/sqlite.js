@@ -1,179 +1,223 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert } from 'react-native';
-import * as SQLite from 'expo-sqlite';
+import { View, Text, Button, StyleSheet, FlatList, TextInput } from "react-native";
+import { useState, useEffect } from "react";
+import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { db, initDb } from "../data/db";
 
-const db = SQLite.openDatabaseSync('despesas.db');
-db.execSync(`
-  PRAGMA journal_mode = WAL;
-  CREATE TABLE IF NOT EXISTS despesas (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    descricao TEXT NOT NULL,
-    valor REAL NOT NULL
-  );
-`);
+initDb();
 
-function getDespesas() {
-  return db.getAllSync('SELECT * FROM despesas');
+function getTreinos(){
+  return db.getAllSync('SELECT * FROM treinos');
 }
 
-function insertDespesa(descricao, valor) {
-  db.runSync('INSERT INTO despesas (descricao, valor) VALUES (?, ?)', [descricao, valor]);
+function insertTreinos(duracaoMin, atividade, categoria) {
+  db.runSync('INSERT INTO treinos (duracaoMin, atividade, categoria) VALUES (?, ?, ?)', [duracaoMin, atividade, categoria]);
 }
 
-export default function App() {
-  const [descricao, setDescricao] = useState("");
-  const [valor, setValor] = useState("");
-  const [despesas, setDespesas] = useState([]);
+function deleteTreinos(id) {
+  db.runSync('DELETE FROM treinos WHERE id = ?', [id]);
+}
 
-  function salvarDespesa() {
-    const desc = descricao.trim();
-    const val = parseFloat(valor);
-    if (!desc || isNaN(val)) {
-      Alert.alert('Preencha todos os campos corretamente!');
-      return;
-    }
-    insertDespesa(desc, val);
-    setDescricao("");
-    setValor("");
-    carregarDespesas();
+function getTreinosById(id) {
+  const [treino] = db.getAllSync('SELECT * FROM treinos WHERE id = ?', [id]);
+  return treino;
+}
+
+function updateTreinos(id, duracaoMin, atividade, categoria) {
+  db.runSync('UPDATE treinos SET atividade = ?, duracaoMin = ?, categoria = ? WHERE id = ?', [atividade, duracaoMin, categoria, id]);
+}
+
+function countTreinos() {
+ const [resultado] = db.getAllSync('SELECT COUNT(*) as tt FROM treinos');
+ return resultado.tt;
+}
+
+export default function sqlite() {
+  const [duracaoMin, setDuracaoMin] = useState("");
+  const [atividade, setAtividade] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [treinos, setTreinos] = useState([]);
+  const [contador, setContador] = useState(0);
+  const [editandoId, setEditandoId] = useState(null);
+
+  function salvarTreino() {
+    const dur = parseFloat(duracaoMin.trim()); // String(duracaoMin) -> editar na hora de colocar na tela
+    const at = atividade.trim();
+    const cat = categoria.trim();
+    if (!dur || !at || !cat) return;
+    insertTreinos(dur, at, cat);
+    setDuracaoMin("");
+    setAtividade("");
+    setCategoria("");
+    carregarTreino();
   }
 
-  function carregarDespesas() {
-    setDespesas(getDespesas());
+  function limparTreino() {
+    setDuracaoMin("");
+    setAtividade("");
+    setCategoria("");
   }
+
+  function carregarTreino() {
+    setTreinos(getTreinos());
+  }
+
+  function excluirTreino(id) {
+    deleteTreinos(id);
+    carregarTreino();
+  }
+
+  function editarTreino(id) {
+    const treino = getTreinosById(id);
+    if (!treino) return;
+    setDuracaoMin (String(treino.duracaoMin));
+    setAtividade(treino.atividade);
+    setCategoria(treino.categoria);
+    setEditandoId(id);
+  }
+
+  function atualizarTreino() {
+    const dur = duracaoMin.trim();
+    const at = atividade.trim();
+    const cat = categoria.trim();
+    if (!dur || !at || !cat || !editandoId) return;
+    updateTreinos(editandoId, dur, at, cat);
+    setDuracaoMin("");
+    setAtividade("");
+    setCategoria("");
+    setEditandoId(null);
+    carregarTreino();
+  }
+
+  useEffect(() => {
+    carregarTreino();
+  }, []);
+
+  useEffect(() => {
+    const tt = countTreinos();
+    setContador(tt);
+  }, [treinos]);
 
   return (
-    <View style={estilos.container}>
-      <Text style={estilos.titulo}>Despesas</Text>
-      <View style={estilos.card}>
+    <SafeAreaView style={estilos.container}>
+      <Text style={estilos.titulo}>Treinos</Text>
+      <Text style={{ fontSize: 16, marginBottom: 10 }}> Total de treinos: {contador}</Text>
+
+      <View style={estilos.linhaEntrada}>
         <TextInput
-          value={descricao}
-          onChangeText={setDescricao}
-          placeholder="Descrição"
-          style={estilos.campoTexto}
-          placeholderTextColor="#aaa"
-        />
-        <TextInput
-          value={valor}
-          onChangeText={setValor}
-          placeholder="Valor (ex: 12.50)"
-          style={estilos.campoTexto}
+          value={duracaoMin}
+          onChangeText={setDuracaoMin}
+          placeholder="DURACAO"
           keyboardType="numeric"
-          placeholderTextColor="#aaa"
+          style={estilos.campoTexto}
         />
-        <View style={estilos.botoes}>
-          <View style={estilos.botaoWrap}>
-            <Button title="Salvar" color="#4CAF50" onPress={salvarDespesa} />
-          </View>
-          <View style={estilos.botaoWrap}>
-            <Button title="Carregar" color="#2196F3" onPress={carregarDespesas} />
-          </View>
-        </View>
+        <TextInput
+          value={atividade}
+          onChangeText={setAtividade}
+          placeholder="ATIVIDADE"
+          style={estilos.campoTexto}
+        />
+        <TextInput
+          value={categoria}
+          onChangeText={setCategoria}
+          placeholder="CATEGORIA"
+          style={estilos.campoTexto}
+        />
+        <Button title="Salvar" onPress={salvarTreino} disabled={!!editandoId} /> 
+        <Button title="Atualizar" onPress={atualizarTreino} disabled={!editandoId} />
+        <Button title="Carregar treinos" onPress={carregarTreino} />
       </View>
-      <View style={estilos.listaCard}>
-        <FlatList
-          data={despesas}
-          keyExtractor={item => String(item.id)}
-          renderItem={({ item }) => (
-            <View style={estilos.itemDespesa}>
-              <Text style={estilos.textoItem}>{item.descricao}</Text>
-              <Text style={estilos.valorItem}>R$ {item.valor.toFixed(2)}</Text>
+
+      
+      <Text style={estilos.titulo1}>DURAÇÃO | ATIVIDADE | CATEGORIA</Text>
+      <FlatList
+        data={treinos}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item }) => (
+          <View style={estilos.itemLinha}>
+            <Text style={estilos.textoItem}>- {item.duracaoMin}, {item.atividade}, {item.categoria}</Text>  
+            <View style={estilos.acoesLinha}>
+              <Button title="E" onPress={() => editarTreino(item.id)} />
+              <Button title="x" color="#b91c1c" onPress={() => excluirTreino(item.id)} />
             </View>
-          )}
-          ListEmptyComponent={<Text style={estilos.vazio}>Nenhuma despesa cadastrada.</Text>}
-        />
+          </View>
+        )}
+      />
+
+      <View style={estilos.rodape}>
+        <Button title="Voltar" onPress={() => router.back()} />
+        <Button title="Início" onPress={() => router.replace("/")} />
+        <Button title="Limpar" onPress={() => limparTreino()} />
+
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const estilos = StyleSheet.create({
-  container: {
+  container: { 
     flex: 1,
+    backgroundColor: '#f9f9f9',
     padding: 16,
-    backgroundColor: '#f2f6fc',
   },
-  titulo: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 18,
+
+  titulo: { 
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 16,
     textAlign: 'center',
-    color: '#374151',
-    letterSpacing: 1,
+    color: "#333",
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 4,
+
+  titulo1: { 
+    fontSize: 12,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: "#333",
   },
+
+  linhaEntrada: { 
+    flexDirection: "column",
+    gap: 12,
+    marginBottom: 24,
+  },
+
   campoTexto: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 10,
-    paddingHorizontal: 14,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 12,
     height: 44,
-    marginBottom: 10,
-    backgroundColor: '#f9fafb',
-    fontSize: 16,
-    color: '#374151',
+    backgroundColor: "#fff",
   },
-  botoes: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
-  botaoWrap: {
-    flex: 1,
-    marginHorizontal: 4,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  listaCard: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.10,
-    shadowRadius: 5,
-    elevation: 2,
-    flex: 1,
-  },
-  itemDespesa: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#f3f4f6',
-    borderRadius: 10,
+
+  itemLinha: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 2,
-    elevation: 1,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
-  textoItem: {
-    fontSize: 16,
-    color: '#374151',
-    fontWeight: '500',
+
+  textoItem: { 
+    fontSize: 16, 
+    color: "#333",
+    flex: 1,
   },
-  valorItem: {
-    fontSize: 16,
-    color: '#10b981',
-    fontWeight: 'bold',
+
+  acoesLinha: {
+    flexDirection: "row",
+    gap: 6,
   },
-  vazio: {
-    textAlign: 'center',
-    color: '#888',
-    marginTop: 20,
-    fontSize: 16,
+
+  rodape: { 
+    flexDirection: "row", 
+    justifyContent: "space-between",
+    marginTop: 24,
   },
 });
