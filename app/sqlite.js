@@ -7,28 +7,28 @@ import { db, initDb } from "../data/db";
 initDb();
 
 function getFilmes(){
-  return db.getAllSync('SELECT * FROM filme');
+  return db.getAllSync('SELECT * FROM filmas');
 }
 
 function insertFilmes(ano, titulo, genero) {
-  db.runSync('INSERT INTO filme (ano, titulo, genero) VALUES (?, ?, ?)', [ano, titulo, genero]);
+  db.runSync('INSERT INTO filmas (ano, titulo, genero) VALUES (?, ?, ?)', [ano, titulo, genero]);
 }
 
 function deleteFilmes(id) {
-  db.runSync('DELETE FROM filme WHERE id = ?', [id]);
+  db.runSync('DELETE FROM filmas WHERE id = ?', [id]);
 }
 
 function getFilmesById(id) {
-  const [treino] = db.getAllSync('SELECT * FROM filme WHERE id = ?', [id]);
-  return treino;
+  const [filme] = db.getAllSync('SELECT * FROM filmas WHERE id = ?', [id]);
+  return filme;
 }
 
 function updateFilmes(id, ano, titulo, genero) {
-  db.runSync('UPDATE filme SET ano = ?, titulo = ?, genero = ? WHERE id = ?', [ano, titulo, genero, id]);
+  db.runSync('UPDATE filmas SET ano = ?, titulo = ?, genero = ? WHERE id = ?', [ano, titulo, genero, id]);
 }
 
 function countFilmes() {
- const [resultado] = db.getAllSync('SELECT COUNT(*) as tt FROM filme');
+ const [resultado] = db.getAllSync('SELECT COUNT(*) as tt FROM filmas');
  return resultado.tt;
 }
 
@@ -41,7 +41,7 @@ export default function sqlite() {
   const [editandoId, setEditandoId] = useState(null);
 
   function salvarFilme() {
-    const an = parseFloat(ano.trim()); // String(duracaoMin) -> editar na hora de colocar na tela
+    const an = parseFloat(ano.trim()); // String(ano) -> editar na hora de colocar na tela
     const ti = titulo.trim();
     const ge = genero.trim();
     if (!an || !ti || !ge) return;

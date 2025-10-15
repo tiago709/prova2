@@ -12,5 +12,5 @@ git init
 git add .
 git commit -m "primeira atualização"
 git branch -M main
-git remote add origin https://github.com/tiago709/08.10.git
+git remote add origin https://github.com/tiago709/prova2.git para a prova esse muda não esquece
 git push -u origin main
