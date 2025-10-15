@@ -6,139 +6,139 @@ import { db, initDb } from "../data/db";
 
 initDb();
 
-function getTreinos(){
-  return db.getAllSync('SELECT * FROM treinos');
+function getFilmes(){
+  return db.getAllSync('SELECT * FROM filme');
 }
 
-function insertTreinos(duracaoMin, atividade, categoria) {
-  db.runSync('INSERT INTO treinos (duracaoMin, atividade, categoria) VALUES (?, ?, ?)', [duracaoMin, atividade, categoria]);
+function insertFilmes(ano, titulo, genero) {
+  db.runSync('INSERT INTO filme (ano, titulo, genero) VALUES (?, ?, ?)', [ano, titulo, genero]);
 }
 
-function deleteTreinos(id) {
-  db.runSync('DELETE FROM treinos WHERE id = ?', [id]);
+function deleteFilmes(id) {
+  db.runSync('DELETE FROM filme WHERE id = ?', [id]);
 }
 
-function getTreinosById(id) {
-  const [treino] = db.getAllSync('SELECT * FROM treinos WHERE id = ?', [id]);
+function getFilmesById(id) {
+  const [treino] = db.getAllSync('SELECT * FROM filme WHERE id = ?', [id]);
   return treino;
 }
 
-function updateTreinos(id, duracaoMin, atividade, categoria) {
-  db.runSync('UPDATE treinos SET atividade = ?, duracaoMin = ?, categoria = ? WHERE id = ?', [atividade, duracaoMin, categoria, id]);
+function updateFilmes(id, ano, titulo, genero) {
+  db.runSync('UPDATE filme SET ano = ?, titulo = ?, genero = ? WHERE id = ?', [ano, titulo, genero, id]);
 }
 
-function countTreinos() {
- const [resultado] = db.getAllSync('SELECT COUNT(*) as tt FROM treinos');
+function countFilmes() {
+ const [resultado] = db.getAllSync('SELECT COUNT(*) as tt FROM filme');
  return resultado.tt;
 }
 
 export default function sqlite() {
-  const [duracaoMin, setDuracaoMin] = useState("");
-  const [atividade, setAtividade] = useState("");
-  const [categoria, setCategoria] = useState("");
-  const [treinos, setTreinos] = useState([]);
+  const [ano, setAno] = useState("");
+  const [titulo, setTitulo] = useState("");
+  const [genero, setGenero] = useState("");
+  const [filmes, setFilmes] = useState([]);
   const [contador, setContador] = useState(0);
   const [editandoId, setEditandoId] = useState(null);
 
-  function salvarTreino() {
-    const dur = parseFloat(duracaoMin.trim()); // String(duracaoMin) -> editar na hora de colocar na tela
-    const at = atividade.trim();
-    const cat = categoria.trim();
-    if (!dur || !at || !cat) return;
-    insertTreinos(dur, at, cat);
-    setDuracaoMin("");
-    setAtividade("");
-    setCategoria("");
-    carregarTreino();
+  function salvarFilme() {
+    const an = parseFloat(ano.trim()); // String(duracaoMin) -> editar na hora de colocar na tela
+    const ti = titulo.trim();
+    const ge = genero.trim();
+    if (!an || !ti || !ge) return;
+    insertFilmes(an, ti, ge);
+    setAno("");
+    setTitulo("");
+    setGenero("");
+    carregarFilme();
   }
 
-  function limparTreino() {
-    setDuracaoMin("");
-    setAtividade("");
-    setCategoria("");
+  function limparFilme() {
+    setAno("");
+    setTitulo("");
+    setGenero("");
   }
 
-  function carregarTreino() {
-    setTreinos(getTreinos());
+  function carregarFilme() {
+    setFilmes(getFilmes());
   }
 
-  function excluirTreino(id) {
-    deleteTreinos(id);
-    carregarTreino();
+  function excluirFilme(id) {
+    deleteFilmes(id);
+    carregarFilme();
   }
 
-  function editarTreino(id) {
-    const treino = getTreinosById(id);
-    if (!treino) return;
-    setDuracaoMin (String(treino.duracaoMin));
-    setAtividade(treino.atividade);
-    setCategoria(treino.categoria);
+  function editarFilme(id) {
+    const filme = getFilmesById(id);
+    if (!filme) return;
+    setAno (String(filme.ano));
+    setTitulo(filme.titulo);
+    setGenero(filme.genero);
     setEditandoId(id);
   }
 
-  function atualizarTreino() {
-    const dur = duracaoMin.trim();
-    const at = atividade.trim();
-    const cat = categoria.trim();
-    if (!dur || !at || !cat || !editandoId) return;
-    updateTreinos(editandoId, dur, at, cat);
-    setDuracaoMin("");
-    setAtividade("");
-    setCategoria("");
+  function atualizarFilme() {
+    const an = ano.trim();
+    const ti = titulo.trim();
+    const ge = genero.trim();
+    if (!an || !ti || !ge || !editandoId) return;
+    updateFilmes(editandoId, an, ti, ge);
+    setAno("");
+    setTitulo("");
+    setGenero("");
     setEditandoId(null);
-    carregarTreino();
+    carregarFilme();
   }
 
   useEffect(() => {
-    carregarTreino();
+    carregarFilme();
   }, []);
 
   useEffect(() => {
-    const tt = countTreinos();
+    const tt = countFilmes();
     setContador(tt);
-  }, [treinos]);
+  }, [filmes]);
 
   return (
     <SafeAreaView style={estilos.container}>
-      <Text style={estilos.titulo}>Treinos</Text>
-      <Text style={{ fontSize: 16, marginBottom: 10 }}> Total de treinos: {contador}</Text>
+      <Text style={estilos.titulo}>FILMES</Text>
+      <Text style={{ fontSize: 16, marginBottom: 10 }}> Total de filmes salvos: {contador}</Text>
 
       <View style={estilos.linhaEntrada}>
         <TextInput
-          value={duracaoMin}
-          onChangeText={setDuracaoMin}
-          placeholder="DURACAO"
+          value={ano}
+          onChangeText={setAno}
+          placeholder="ANO"
           keyboardType="numeric"
           style={estilos.campoTexto}
         />
         <TextInput
-          value={atividade}
-          onChangeText={setAtividade}
-          placeholder="ATIVIDADE"
+          value={titulo}
+          onChangeText={setTitulo}
+          placeholder="TITULO"
           style={estilos.campoTexto}
         />
         <TextInput
-          value={categoria}
-          onChangeText={setCategoria}
-          placeholder="CATEGORIA"
+          value={genero}
+          onChangeText={setGenero}
+          placeholder="GENERO"
           style={estilos.campoTexto}
         />
-        <Button title="Salvar" onPress={salvarTreino} disabled={!!editandoId} /> 
-        <Button title="Atualizar" onPress={atualizarTreino} disabled={!editandoId} />
-        <Button title="Carregar treinos" onPress={carregarTreino} />
+        <Button title="Salvar" onPress={salvarFilme} disabled={!!editandoId} /> 
+        <Button title="Atualizar" onPress={atualizarFilme} disabled={!editandoId} />
+        <Button title="Carregar filmes" onPress={carregarFilme} />
       </View>
 
       
-      <Text style={estilos.titulo1}>DURAÇÃO | ATIVIDADE | CATEGORIA</Text>
+      <Text style={estilos.titulo1}>ANO | TITULO | GENERO</Text>
       <FlatList
-        data={treinos}
+        data={filmes}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <View style={estilos.itemLinha}>
-            <Text style={estilos.textoItem}>- {item.duracaoMin}, {item.atividade}, {item.categoria}</Text>  
+            <Text style={estilos.textoItem}>- {item.ano}, {item.titulo}, {item.genero}</Text>  
             <View style={estilos.acoesLinha}>
-              <Button title="E" onPress={() => editarTreino(item.id)} />
-              <Button title="x" color="#b91c1c" onPress={() => excluirTreino(item.id)} />
+              <Button title="E" onPress={() => editarFilme(item.id)} />
+              <Button title="x" color="#b91c1c" onPress={() => excluirFilme(item.id)} />
             </View>
           </View>
         )}
@@ -147,7 +147,7 @@ export default function sqlite() {
       <View style={estilos.rodape}>
         <Button title="Voltar" onPress={() => router.back()} />
         <Button title="Início" onPress={() => router.replace("/")} />
-        <Button title="Limpar" onPress={() => limparTreino()} />
+        <Button title="Limpar" onPress={() => limparFilme()} />
 
       </View>
     </SafeAreaView>

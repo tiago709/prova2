@@ -5,9 +5,9 @@ import { Link } from 'expo-router';
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>App de Treinos</Text>
+      <Text style={styles.title}>App de filmes</Text>
       <Link href="/sqlite" asChild>
-        <Button title="Ver Treinos" />
+        <Button title="Meus filmes" />
       </Link>
     </View>
   );
